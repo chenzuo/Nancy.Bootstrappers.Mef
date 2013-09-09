@@ -1,4 +1,4 @@
-## Managed Extensibility Framework (MEF) Bootstrapper for Nancy
+## Managed Extensibility Framework (MEF) Bootstrapper
 
 ## TODO FIX ALL THIS
 
