@@ -66,6 +66,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nancy.Bootstrappers.Mef\Nancy.Bootstrappers.Mef.csproj">
+      <Project>{187dcedf-7093-46fc-8c76-793f0c6bd591}</Project>
+      <Name>Nancy.Bootstrappers.Mef</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

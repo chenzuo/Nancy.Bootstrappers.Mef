@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{56BEED
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef", "NancyFx.Bootstrappers.Mef\Nancy.Bootstrappers.Mef.csproj", "{187DCEDF-7093-46FC-8C76-793F0C6BD591}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef", "Nancy.Bootstrappers.Mef\Nancy.Bootstrappers.Mef.csproj", "{187DCEDF-7093-46FC-8C76-793F0C6BD591}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef.Tests", "NancyFx.Bootstrappers.Mef.Tests\Nancy.Bootstrappers.Mef.Tests.csproj", "{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef.Tests", "Nancy.Bootstrappers.Mef.Tests\Nancy.Bootstrappers.Mef.Tests.csproj", "{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

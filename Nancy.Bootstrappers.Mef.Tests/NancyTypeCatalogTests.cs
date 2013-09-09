@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.Composition.Hosting;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nancy.ViewEngines;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Nancy.Bootstrappers.Mef.Tests
 {
@@ -14,15 +11,6 @@ namespace Nancy.Bootstrappers.Mef.Tests
         {
             return new NancyTypeCatalog(typeof(Nancy.NancyEngine).Assembly.GetTypes());
         }
-
-        //[TestMethod]
-        //public void ViewLocationProviderTest()
-        //{
-        //    var a = new NancyTypeCatalog(typeof(IViewLocationProvider), typeof(ResourceViewLocationProvider));
-        //    var c = new CompositionContainer(a);
-        //    var i = c.GetExports<IViewLocationProvider>();
-        //    Assert.IsTrue(i.Count() == 1);
-        //}
 
     }
 
