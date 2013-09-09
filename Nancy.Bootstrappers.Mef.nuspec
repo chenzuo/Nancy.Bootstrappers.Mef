@@ -28,8 +28,5 @@
         <file
             src="Nancy.Bootstrappers.Mef\bin\Release\Nancy.Bootstrappers.Mef.pdb"
             target="lib\net45" />
-        <file
-            src="Nancy.Bootstrappers.Mef\**\*.cs"
-            target="src" />
     </files>
 </package>
