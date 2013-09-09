@@ -3,7 +3,7 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Nancy.Bootstrapper.Mef.Tests
+namespace Nancy.Bootstrappers.Mef.Tests
 {
 
     [TestClass]

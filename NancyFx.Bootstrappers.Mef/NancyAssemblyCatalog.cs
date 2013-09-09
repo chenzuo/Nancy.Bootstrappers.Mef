@@ -3,7 +3,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
-namespace Nancy.Bootstrapper.Mef
+namespace Nancy.Bootstrappers.Mef
 {
 
     /// <summary>

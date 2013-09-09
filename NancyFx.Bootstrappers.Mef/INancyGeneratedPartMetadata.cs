@@ -1,4 +1,4 @@
-﻿namespace Nancy.Bootstrapper.Mef
+﻿namespace Nancy.Bootstrappers.Mef
 {
 
     public interface INancyGeneratedPartMetadata

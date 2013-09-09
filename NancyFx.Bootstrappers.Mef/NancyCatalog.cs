@@ -5,7 +5,7 @@ using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace Nancy.Bootstrapper.Mef
+namespace Nancy.Bootstrappers.Mef
 {
 
     public abstract class NancyCatalog : FilteredCatalog

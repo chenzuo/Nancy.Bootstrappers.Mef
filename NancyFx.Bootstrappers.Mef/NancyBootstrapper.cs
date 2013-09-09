@@ -5,9 +5,12 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+
+using Nancy;
+using Nancy.Bootstrapper;
 using Nancy.Diagnostics;
 
-namespace Nancy.Bootstrapper.Mef
+namespace Nancy.Bootstrappers.Mef
 {
 
     /// <summary>

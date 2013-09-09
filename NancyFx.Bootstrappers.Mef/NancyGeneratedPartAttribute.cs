@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 
-namespace Nancy.Bootstrapper.Mef
+namespace Nancy.Bootstrappers.Mef
 {
 
     /// <summary>

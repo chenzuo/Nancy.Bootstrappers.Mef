@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Context;
 
-namespace Nancy.Bootstrapper.Mef
+namespace Nancy.Bootstrappers.Mef
 {
 
     /// <summary>
