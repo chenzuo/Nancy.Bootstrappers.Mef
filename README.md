@@ -1,2 +1,2 @@
-NancyFx.Bootstrappers.Mef
+Nancy.Bootstrappers.Mef
 =========================
