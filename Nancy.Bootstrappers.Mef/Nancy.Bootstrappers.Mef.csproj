@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositionExtensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="INancyGeneratedPartMetadataView.cs" />
     <Compile Include="NancyCatalog.cs" />
     <Compile Include="NancyGeneratedPartAttribute.cs" />

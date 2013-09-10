@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.Composition.Hosting;
 using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Nancy.Routing;
 using Nancy.ViewEngines;
 
 namespace Nancy.Bootstrappers.Mef.Tests
@@ -40,6 +39,51 @@ namespace Nancy.Bootstrappers.Mef.Tests
         {
             var c = new CompositionContainer(CreateCatalog());
             var e = c.GetExports<INancyEngine>();
+            Assert.IsTrue(e != null);
+            Assert.IsTrue(e.Count() == 1);
+        }
+
+        [TestMethod]
+        public void RequestDispatcherTest()
+        {
+            var c = new CompositionContainer(CreateCatalog());
+            var e = c.GetExports<IRequestDispatcher>();
+            Assert.IsTrue(e != null);
+            Assert.IsTrue(e.Count() == 1);
+        }
+
+        [TestMethod]
+        public void RouteResolverTest()
+        {
+            var c = new CompositionContainer(CreateCatalog());
+            var e = c.GetExports<IRouteResolver>();
+            Assert.IsTrue(e != null);
+            Assert.IsTrue(e.Count() == 1);
+        }
+
+        [TestMethod]
+        public void ModuleBuilderTest()
+        {
+            var c = new CompositionContainer(CreateCatalog());
+            var e = c.GetExports<INancyModuleBuilder>();
+            Assert.IsTrue(e != null);
+            Assert.IsTrue(e.Count() == 1);
+        }
+
+        [TestMethod]
+        public void ViewFactoryTest()
+        {
+            var c = new CompositionContainer(CreateCatalog());
+            var e = c.GetExports<IViewFactory>();
+            Assert.IsTrue(e != null);
+            Assert.IsTrue(e.Count() == 1);
+        }
+
+        [TestMethod]
+        public void ViewResolverTest()
+        {
+            var c = new CompositionContainer(CreateCatalog());
+            var e = c.GetExports<IViewResolver>();
             Assert.IsTrue(e != null);
             Assert.IsTrue(e.Count() == 1);
         }
