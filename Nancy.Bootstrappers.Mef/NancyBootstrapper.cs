@@ -52,7 +52,7 @@ namespace Nancy.Bootstrappers.Mef
         protected override CompositionContainer GetApplicationContainer()
         {
             // default container resolves against an application catalog, passing through a custom ExportProvider
-            var p1 = new CatalogExportProvider(ContainerCatalog = new AggregateCatalog(GetApplicationCatalog()));
+            var p1 = new CatalogExportProvider(ContainerCatalog = new AggregateCatalog());
             var p2 = new NancyExportProvider(p1);
             var cc = new CompositionContainer(
                 CompositionOptions.DisableSilentRejection | 
@@ -64,21 +64,12 @@ namespace Nancy.Bootstrappers.Mef
         }
 
         /// <summary>
-        /// Creates the catalog to associate with the default application container.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual ComposablePartCatalog GetApplicationCatalog()
-        {
-            return new NancyApplicationCatalog();
-        }
-
-        /// <summary>
         /// Provides a place to configure the newly created <see cref="CompositionContainer"/>. By default this method
-        /// registers a <see cref="NancyAssemblyCatalog"/> associated with the Nancy assembly. This prevents multiple
-        /// catalogs from being added later during individual type registration.
+        /// registers a <see cref="NancyAssemblyCatalog"/> associated with the Nancy assembly. Override this method to
+        /// add additional part catalogs.
         /// </summary>
         /// <param name="existingContainer"></param>
-        protected override void ConfigureApplicationContainer(CompositionContainer existingContainer)
+        private override void ConfigureApplicationContainer(CompositionContainer existingContainer)
         {
             ContainerCatalog.Catalogs.Add(new NancyAssemblyCatalog(typeof(NancyEngine).Assembly));
         }
@@ -93,7 +84,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns></returns>
         bool CatalogHasPart(CompositionContainer container, Type contractType, Type implementationType)
         {
-            return container.Catalog
+            return container
                 .Where(i => i.Exports(contractType))
                 .Where(i => ReflectionModelServices.GetPartType(i).Value.UnderlyingSystemType == implementationType.UnderlyingSystemType)
                 .Any();
