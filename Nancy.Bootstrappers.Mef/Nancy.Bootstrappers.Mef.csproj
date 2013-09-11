@@ -115,20 +115,20 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicAggregateExportProvider.cs" />
-    <Compile Include="ExportProviderCollection.cs" />
+    <Compile Include="Composition\Hosting\DynamicAggregateExportProvider.cs" />
+    <Compile Include="Composition\Hosting\ExportProviderCollection.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="NancyApplicationCatalog.cs" />
-    <Compile Include="NancyExportProvider.cs" />
-    <Compile Include="NancyMetadataKeys.cs" />
-    <Compile Include="NancyRegistrationBuilder.cs" />
-    <Compile Include="NancyTypeCatalog.cs" />
+    <Compile Include="Composition\Hosting\NancyApplicationCatalog.cs" />
+    <Compile Include="Composition\Hosting\NancyExportProvider.cs" />
+    <Compile Include="Composition\NancyMetadataKeys.cs" />
+    <Compile Include="Composition\Registration\NancyRegistrationBuilder.cs" />
+    <Compile Include="Composition\Hosting\NancyTypeCatalog.cs" />
     <Compile Include="NancyBootstrapper.cs" />
-    <Compile Include="NancyAssemblyCatalog.cs" />
-    <Compile Include="NancyReflectionContext.cs" />
+    <Compile Include="Composition\Hosting\NancyAssemblyCatalog.cs" />
+    <Compile Include="Composition\Registration\NancyReflectionContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeHelpers.cs" />
+    <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

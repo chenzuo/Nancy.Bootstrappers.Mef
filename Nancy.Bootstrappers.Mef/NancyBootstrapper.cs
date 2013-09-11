@@ -6,8 +6,9 @@ using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-using Nancy;
 using Nancy.Bootstrapper;
+using Nancy.Bootstrappers.Mef.Composition.Hosting;
+using Nancy.Bootstrappers.Mef.Extensions;
 using Nancy.Diagnostics;
 
 namespace Nancy.Bootstrappers.Mef

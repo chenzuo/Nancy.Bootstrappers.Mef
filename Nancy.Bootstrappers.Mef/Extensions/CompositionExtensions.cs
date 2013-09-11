@@ -5,7 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 
-namespace Nancy.Bootstrappers.Mef
+namespace Nancy.Bootstrappers.Mef.Extensions
 {
 
     static class CompositionExtensions

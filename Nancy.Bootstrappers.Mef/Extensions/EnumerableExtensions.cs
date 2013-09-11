@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace Nancy.Bootstrappers.Mef
+namespace Nancy.Bootstrappers.Mef.Extensions
 {
 
     static class EnumerableExtensions
