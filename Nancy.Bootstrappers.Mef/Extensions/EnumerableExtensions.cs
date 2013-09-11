@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -86,11 +87,20 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns></returns>
         public static IEnumerable<T> ToDebugList<T>(this IEnumerable<T> self)
         {
-#if DEBUG
-            return self.ToList();
-#else
+            Contract.Requires<ArgumentNullException>(self != null);
+
+            // this method gets patched out if not in debug mode
+            ToDebugListImpl<T>(ref self);
+
             return self;
-#endif
+        }
+
+        [Conditional("DEBUG")]
+        static void ToDebugListImpl<T>(ref IEnumerable<T> self)
+        {
+            Contract.Requires<ArgumentNullException>(self != null);
+
+            self = self.ToList();
         }
 
     }

@@ -93,14 +93,16 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="NancyApplicationCatalogTests.cs" />
     <Compile Include="NancyCatalogTests.cs" />
     <Compile Include="NancyAssemblyCatalogTests.cs" />
     <Compile Include="NancyRegistrationBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NancyTypeCatalogTests.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="TypeHelpersTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

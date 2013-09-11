@@ -60,7 +60,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns></returns>
         protected virtual AggregateCatalog GetApplicationCatalog()
         {
-            return new AggregateCatalog();
+            return new AggregateCatalog(new NancyApplicationCatalog());
         }
 
         /// <summary>

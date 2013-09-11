@@ -69,7 +69,7 @@ namespace Nancy.Bootstrappers.Mef
         static internal bool IsExportablePart(Type type)
         {
             Contract.Requires<ArgumentNullException>(type != null);
-
+            var n = type.Name;
             var b = true;
 
             // parts must be classes, and not abstract, public with at least one constructor
@@ -80,22 +80,24 @@ namespace Nancy.Bootstrappers.Mef
             if (!(b &= TypeHelpers.ReferencesNancy(type)))
                 return false;
 
+            // evaluate other arbitrary constraints
+            var passed = constraints.All(i => i(type));
+            if (!(b &= passed))
+                return false;
+
             // if the type has any MEF Export attributes on it, we should ignore it; it should be handled by a standard
             // MEF catalog
-            if (type.IsClass)
-            {
-                var referencesMef = type.Assembly.GetReferencedAssemblies()
-                    .Any(i => i.Name == typeof(ExportAttribute).Assembly.GetName().Name);
+            var referencesMef = type.Assembly.GetReferencedAssemblies()
+                .Any(i => i.Name == typeof(ExportAttribute).Assembly.GetName().Name);
 
-                var exports = type
-                    .Recurse(i => i.BaseType)
-                    .SelectMany(i => i.GetMembers(BindingFlags.Instance | BindingFlags.Public).Prepend(i))
-                    .SelectMany(i => i.GetCustomAttributes<ExportAttribute>())
-                    .ToDebugList();
+            var exports = type
+                .Recurse(i => i.BaseType)
+                .SelectMany(i => i.GetMembers(BindingFlags.Instance | BindingFlags.Public).Prepend(i))
+                .SelectMany(i => i.GetCustomAttributes<ExportAttribute>())
+                .ToDebugList();
 
-                if (!(b &= !(referencesMef && exports.Any())))
-                    return false;
-            }
+            if (!(b &= !referencesMef || !exports.Any()))
+                return false;
 
             return b;
         }
@@ -136,34 +138,20 @@ namespace Nancy.Bootstrappers.Mef
             // as an appropriate Func<T> contract.
             ForType(typeof(FuncFactory<>))
                 .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                .AddMetadata(NancyMetadataKeys.Part, true)
-                .AddMetadata(NancyMetadataKeys.InternalPart, true)
                 .Export(i => i
-                    .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                    .AddMetadata(NancyMetadataKeys.Export, true)
-                    .AddMetadata(NancyMetadataKeys.SelfExport, true)
-                    .AddMetadata(NancyMetadataKeys.InternalExport, true)
                     .AsContractType(typeof(FuncFactory<>)))
                 .ExportProperties(i =>
                     i == ExportFuncPropertyInfo, (i, j) => j
-                        .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                        .AddMetadata(NancyMetadataKeys.Export, true)
-                        .AddMetadata(NancyMetadataKeys.InternalExport, true)
                         .AsContractType(typeof(Func<>))
                         .AsContractName("FuncFactory:" + AttributedModelServices.GetContractName(typeof(Func<>))));
 
             // export any exportable parts
             ForTypesMatching(i => IsExportablePart(i))
                 .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                .AddMetadata(NancyMetadataKeys.Part, true)
-                .Export(i => i
-                    .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                    .AddMetadata(NancyMetadataKeys.Export, true)
-                    .AddMetadata(NancyMetadataKeys.SelfExport, true))
+                .Export()
                 .ExportInterfaces(i =>
                     IsExportableInterface(i), (i, j) => j
-                        .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
-                        .AddMetadata(NancyMetadataKeys.Export, true))
+                        .AsContractType(i))
                 .SelectConstructor(i =>
                     SelectConstructor(i), (i, j) =>
                         BuildParameter(i, j));
@@ -214,8 +202,9 @@ namespace Nancy.Bootstrappers.Mef
 
                 if (importManyType != null)
                 {
-                    builder.AsMany(true);
                     builder.AsContractType(importManyType);
+                    builder.AsMany(true);
+                    builder.AllowDefault();
                     return;
                 }
             }
@@ -238,13 +227,15 @@ namespace Nancy.Bootstrappers.Mef
                     builder.AsContractType(contractType);
                     builder.AsContractName(contractName);
                     builder.AsMany(false);
+                    builder.AllowDefault();
                     return;
                 }
             }
 
             // fall back to normal method
-            builder.AsMany(false);
             builder.AsContractType(parameter.ParameterType);
+            builder.AsMany(false);
+            builder.AllowDefault();
             return;
         }
 

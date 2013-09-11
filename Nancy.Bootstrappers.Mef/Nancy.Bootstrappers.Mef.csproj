@@ -115,8 +115,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicAggregateExportProvider.cs" />
+    <Compile Include="ExportProviderCollection.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="NancyApplicationCatalog.cs" />
+    <Compile Include="NancyExportProvider.cs" />
     <Compile Include="NancyMetadataKeys.cs" />
     <Compile Include="NancyRegistrationBuilder.cs" />
     <Compile Include="NancyTypeCatalog.cs" />
