@@ -10,15 +10,15 @@ namespace Nancy.Bootstrappers.Mef
     /// Type catalog that provides export of Nancy implementations that are not decorated with standard
     /// MEF attributes. The <see cref="NancyReflectionContext"/> is used to virtualize MEF attributes.
     /// </summary>
-    public class NancyTypeCatalog : NancyCatalog
+    public class NancyTypeCatalog : TypeCatalog
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="types"></param>
         public NancyTypeCatalog(params Type[] types)
-            : this((IEnumerable<Type>)types)
+            : base(types, new NancyReflectionContext())
         {
             Contract.Requires<NullReferenceException>(types != null);
         }
@@ -26,9 +26,9 @@ namespace Nancy.Bootstrappers.Mef
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="types"></param>
         public NancyTypeCatalog(IEnumerable<Type> types)
-            : base(new TypeCatalog(types, new NancyReflectionContext()))
+            : base(types, new NancyReflectionContext())
         {
             Contract.Requires<NullReferenceException>(types != null);
         }

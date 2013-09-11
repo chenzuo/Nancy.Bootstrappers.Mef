@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.ComponentModel.Composition.Primitives;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Nancy.Bootstrappers.Mef.Tests
 {
@@ -7,7 +9,7 @@ namespace Nancy.Bootstrappers.Mef.Tests
     public class NancyTypeCatalogTests : NancyCatalogTests
     {
 
-        protected override NancyCatalog CreateCatalog()
+        protected override ComposablePartCatalog CreateCatalog()
         {
             return new NancyTypeCatalog(typeof(Nancy.NancyEngine).Assembly.GetTypes());
         }

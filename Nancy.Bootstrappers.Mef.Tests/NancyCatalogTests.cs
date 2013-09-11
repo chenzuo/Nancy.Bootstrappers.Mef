@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,7 +11,7 @@ namespace Nancy.Bootstrappers.Mef.Tests
     public abstract class NancyCatalogTests
     {
 
-        protected abstract NancyCatalog CreateCatalog();
+        protected abstract ComposablePartCatalog CreateCatalog();
 
         [TestMethod]
         public void PartQueryTest()
