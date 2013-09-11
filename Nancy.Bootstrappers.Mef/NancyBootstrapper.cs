@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
@@ -22,8 +22,6 @@ namespace Nancy.Bootstrappers.Mef
     public class NancyBootstrapper : NancyBootstrapperWithRequestContainerBase<CompositionContainer>
     {
 
-        AggregateCatalog catalog;
-
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
@@ -39,10 +37,13 @@ namespace Nancy.Bootstrappers.Mef
         /// Gets the default catalog configured on the container. This is always an <see cref="AggregateCatalog"/> to
         /// make later expansion easier.
         /// </summary>
-        public AggregateCatalog AplicationContainerCatalog
-        {
-            get { return catalog; }
-        }
+        public AggregateCatalog ContainerCatalog { get; private set; }
+
+        /// <summary>
+        /// Gets the export provider used by the container. This is responsible for generating instances in the proper
+        /// manner Nancy expects.
+        /// </summary>
+        public NancyExportProvider ExportProvider { get; private set; }
 
         /// <summary>
         /// Create a default, unconfigured, container
@@ -50,18 +51,25 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns>Container instance</returns>
         protected override CompositionContainer GetApplicationContainer()
         {
-            return new CompositionContainer(
-                catalog = GetApplicationCatalog(),
-                CompositionOptions.IsThreadSafe | CompositionOptions.ExportCompositionService);
+            // default container resolves against an application catalog, passing through a custom ExportProvider
+            var p1 = new CatalogExportProvider(ContainerCatalog = new AggregateCatalog(GetApplicationCatalog()));
+            var p2 = new NancyExportProvider(p1);
+            var cc = new CompositionContainer(
+                CompositionOptions.DisableSilentRejection | 
+                CompositionOptions.ExportCompositionService |
+                CompositionOptions.IsThreadSafe, ExportProvider = p2);
+            p1.SourceProvider = cc;
+
+            return cc;
         }
 
         /// <summary>
         /// Creates the catalog to associate with the default application container.
         /// </summary>
         /// <returns></returns>
-        protected virtual AggregateCatalog GetApplicationCatalog()
+        protected virtual ComposablePartCatalog GetApplicationCatalog()
         {
-            return new AggregateCatalog(new NancyApplicationCatalog());
+            return new NancyApplicationCatalog();
         }
 
         /// <summary>
@@ -72,7 +80,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="existingContainer"></param>
         protected override void ConfigureApplicationContainer(CompositionContainer existingContainer)
         {
-            AplicationContainerCatalog.Catalogs.Add(new NancyAssemblyCatalog(typeof(NancyEngine).Assembly));
+            ContainerCatalog.Catalogs.Add(new NancyAssemblyCatalog(typeof(NancyEngine).Assembly));
         }
 
         /// <summary>

@@ -5,7 +5,7 @@
     <metadata
         xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
         <id>Nancy.Bootstrappers.Mef</id>
-        <version>0.0.0.4</version>
+        <version>0.0.0.5</version>
         <authors>Jerome Haltom</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A MEF bootstrapper for the Nancy web framework. This allows you to use System.ComponentModel.Composition as a container.</description>
