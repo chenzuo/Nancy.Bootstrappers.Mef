@@ -62,6 +62,11 @@ namespace Nancy.Bootstrappers.Mef
                 ApplicationContainer);
         }
 
+        protected override void ConfigureRequestContainer(CompositionContainer container, NancyContext context)
+        {
+            base.ConfigureRequestContainer(container, context);
+        }
+
     }
 
     /// <summary>

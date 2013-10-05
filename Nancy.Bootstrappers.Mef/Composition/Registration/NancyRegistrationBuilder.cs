@@ -154,11 +154,8 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             ForTypesMatching(i => IsNancyPart(i))
                 .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
                 .Export()
-                .ExportInterfaces(i =>
-                {
-                    var name = i.Name;
-                    return IsNancyContract(i); }, (i, j) => j
-                        .AsContractType(i))
+                .ExportInterfaces(i => IsNancyContract(i), (i, j) => j
+                    .AsContractType(i))
                 .SelectConstructor(i =>
                     SelectConstructor(i), (i, j) =>
                         BuildParameter(i, j));
@@ -242,7 +239,6 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             // fall back to normal method
             builder.AsContractType(parameter.ParameterType);
             builder.AsMany(false);
-            //builder.AllowDefault();
             return;
         }
 
