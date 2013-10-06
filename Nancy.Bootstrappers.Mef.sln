@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.20623.1 VSUPREVIEW
+VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{56BEEDFE-9A56-4070-A9A6-41BF87ED5B03}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,11 +13,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef", "Nancy.Bootstrappers.Mef\Nancy.Bootstrappers.Mef.csproj", "{187DCEDF-7093-46FC-8C76-793F0C6BD591}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef.Tests", "Nancy.Bootstrappers.Mef.Tests\Nancy.Bootstrappers.Mef.Tests.csproj", "{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9AC31BA-D396-4FB7-9349-7CF6F9145574}"
-	ProjectSection(SolutionItems) = preProject
-		Nancy.Bootstrappers.Mef.nuspec = Nancy.Bootstrappers.Mef.nuspec
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
