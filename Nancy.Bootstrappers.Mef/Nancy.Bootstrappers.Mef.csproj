@@ -122,6 +122,7 @@
     <Compile Include="Composition\Hosting\ExportProviderCollection.cs" />
     <Compile Include="Composition\Hosting\NancyDefaultAssemblyCatalog.cs" />
     <Compile Include="Composition\Hosting\CatalogUtils.cs" />
+    <Compile Include="Extensions\ExportProviderExtensions.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Composition\Hosting\NancyApplicationCatalog.cs" />

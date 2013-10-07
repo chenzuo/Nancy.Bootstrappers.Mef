@@ -138,7 +138,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
         /// <returns></returns>
         protected virtual IEnumerable<Export> GetExportsCoreZeroOrOne(ImportDefinition definition, AtomicComposition atomicComposition)
         {
-            return providers.SelectMany(i => i.GetExports(definition, atomicComposition));
+            return providers.SelectMany(i => i.TryGetExports(definition, atomicComposition));
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
         /// <returns></returns>
         protected virtual IEnumerable<Export> GetExportsCoreZeroOrMore(ImportDefinition definition, AtomicComposition atomicComposition)
         {
-            return providers.SelectMany(i => i.GetExports(definition, atomicComposition));
+            return providers.SelectMany(i => i.TryGetExports(definition, atomicComposition));
         }
 
         /// <summary>
