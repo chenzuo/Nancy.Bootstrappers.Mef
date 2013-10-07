@@ -11,7 +11,9 @@ using System.Threading;
 namespace Nancy.Bootstrappers.Mef.Composition.Hosting
 {
 
-    /// <summary>Retrieves exports provided by a collection of <see cref="T:System.ComponentModel.Composition.Hosting.ExportProvider" /> objects.</summary>
+    /// <summary>
+    /// Retrieves exports provided by a collection of <see cref="T:System.ComponentModel.Composition.Hosting.ExportProvider" /> objects.
+    /// </summary>
     public class DynamicAggregateExportProvider : ExportProvider, IDisposable
     {
 

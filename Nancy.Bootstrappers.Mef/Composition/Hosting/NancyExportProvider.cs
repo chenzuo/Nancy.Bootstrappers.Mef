@@ -38,8 +38,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
         protected override IEnumerable<Export> GetExportsCore(ImportDefinition definition, AtomicComposition atomicComposition)
         {
             // replace ZeroOrOne with ZeroOrMore to prevent errors down the chain; we'll grab the first
-            if (definition.Cardinality == ImportCardinality.ZeroOrOne ||
-                definition.Cardinality == ImportCardinality.ExactlyOne)
+            if (definition.Cardinality == ImportCardinality.ExactlyOne)
                 return base.GetExportsCore(new ImportDefinition(
                     definition.Constraint,
                     definition.ContractName,
