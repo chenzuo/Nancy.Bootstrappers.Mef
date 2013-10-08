@@ -21,6 +21,8 @@ Most of the Nancy expectations are upheld. Nancy continues to use its own AppDom
 
 One more caveat. Before adding a Nancy type to a NancyTypeCatalog and invoke AddCatalog, the container is checked to see if the type is already available. This allows you to add the Nancy types to the MEF container yourself, if you choose, and the bootstrapper will not add them twice. In this way, if you desire, you can register all of the parts in the container yourself (taking care to properly implement the policy provided by NancyExportProvider), and use your own catalog, or ReflectionContext. To ignore all of Nancy's decisions about what to add, simply override AddCatalog and do nothing; or disable its assembly scanner in some other fashion.
 
+This also lets you use MEF Export attributes to provide parts to Nancy from your own assemblies. Nancy will probably discover them on its own, but in this way they will not be added twice.
+
 ## Contributors
 
 * [Jerome Haltom](http://github.com/wasabii)
