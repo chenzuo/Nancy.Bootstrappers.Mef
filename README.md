@@ -33,4 +33,4 @@ Copyright © 2013 Jerome Haltom
 
 ## License
 
-Nancy.Bootstrappers.Mef is licensed under [MIT](http://www.opensource.org/licenses/mit-license.php "Read more about the MIT license form"). Refer to license.txt for more information.
+Nancy.Bootstrappers.Mef is licensed under [MIT](http://www.opensource.org/licenses/mit-license.php "Read more about the MIT license form"). Refer to LICENSE for more information.
