@@ -23,6 +23,20 @@ One more caveat. Before adding a Nancy type to a NancyTypeCatalog and invoke Add
 
 This also lets you use MEF Export attributes to provide parts to Nancy from your own assemblies. Nancy will probably discover them on its own, but in this way they will not be added twice.
 
+This is the default implementation of GetApplicationContainer, which adds the NancyExportProvider.
+
+```csharp
+protected override CompositionContainer GetApplicationContainer()
+{
+    // default implementation
+    return new CompositionContainer(
+        CompositionOptions.DisableSilentRejection |
+        CompositionOptions.ExportCompositionService |
+        CompositionOptions.IsThreadSafe,
+        new NancyExportProvider());
+}
+```
+
 ## Contributors
 
 * [Jerome Haltom](http://github.com/wasabii)
