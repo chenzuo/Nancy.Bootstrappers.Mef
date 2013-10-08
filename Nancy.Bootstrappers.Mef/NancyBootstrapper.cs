@@ -62,11 +62,6 @@ namespace Nancy.Bootstrappers.Mef
                 ApplicationContainer);
         }
 
-        protected override void ConfigureRequestContainer(CompositionContainer container, NancyContext context)
-        {
-            base.ConfigureRequestContainer(container, context);
-        }
-
     }
 
     /// <summary>
@@ -99,7 +94,7 @@ namespace Nancy.Bootstrappers.Mef
         }
 
         /// <summary>
-        /// Returns <c>true</c> if the type given by <paramref cref="implementationType"/> is already available as an export
+        /// Returns <c>true</c> if the type given by <paramref name="implementationType"/> is already available as an export
         /// of <paramref cref="contractType"/> in the container.
         /// </summary>
         /// <param name="container"></param>
