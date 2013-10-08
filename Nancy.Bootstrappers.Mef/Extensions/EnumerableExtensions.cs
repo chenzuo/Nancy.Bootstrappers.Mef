@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -101,6 +102,16 @@ namespace Nancy.Bootstrappers.Mef.Extensions
             Contract.Requires<ArgumentNullException>(self != null);
 
             self = self.ToList();
+        }
+
+        /// <summary>
+        /// Returns an empty <see cref="IEnumerable"/> if <paramref name="source"/> is null.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IEnumerable EmptyIfNull(this IEnumerable source)
+        {
+            return source ?? Enumerable.Empty<object>();
         }
 
     }

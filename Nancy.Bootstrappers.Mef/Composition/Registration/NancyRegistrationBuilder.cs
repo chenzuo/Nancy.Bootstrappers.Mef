@@ -77,19 +77,17 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             if (type.Assembly == typeof(NancyBootstrapper).Assembly)
                 return false;
 
-            var b = true;
-
             // parts must be classes, and not abstract, public with at least one constructor
-            if (!(b &= type.IsClass && !type.IsAbstract && type.IsPublic && type.GetConstructors().Length > 0))
+            if (!(type.IsClass && !type.IsAbstract && type.IsPublic && type.GetConstructors().Length > 0))
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(b &= TypeHelper.ReferencesNancy(type)))
+            if (!(TypeHelper.ReferencesNancy(type)))
                 return false;
 
             // evaluate other arbitrary constraints
             var passed = constraints.All(i => i(type));
-            if (!(b &= passed))
+            if (!passed)
                 return false;
 
             // if the type has any MEF Export attributes on it, we should ignore it; it should be handled by a standard
@@ -103,10 +101,10 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 .SelectMany(i => i.GetCustomAttributes<ExportAttribute>())
                 .ToDebugList();
 
-            if (!(b &= !referencesMef || !exports.Any()))
+            if (!(!referencesMef || !exports.Any()))
                 return false;
 
-            return b;
+            return true;
         }
 
         /// <summary>
@@ -156,9 +154,8 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             ForTypesMatching(i => IsNancyPart(i))
                 .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
                 .Export()
-                .ExportInterfaces(i =>
-                    IsNancyContract(i), (i, j) => j
-                        .AsContractType(i))
+                .ExportInterfaces(i => IsNancyContract(i), (i, j) => j
+                    .AsContractType(i))
                 .SelectConstructor(i =>
                     SelectConstructor(i), (i, j) =>
                         BuildParameter(i, j));
@@ -242,7 +239,6 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             // fall back to normal method
             builder.AsContractType(parameter.ParameterType);
             builder.AsMany(false);
-            builder.AllowDefault();
             return;
         }
 

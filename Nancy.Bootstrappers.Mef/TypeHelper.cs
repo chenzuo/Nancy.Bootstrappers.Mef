@@ -19,9 +19,10 @@ namespace Nancy.Bootstrappers.Mef
         {
             Contract.Requires<ArgumentNullException>(type != null);
 
+            // does type's assembly's references contain Nancy assembly?
             return type.Assembly.GetReferencedAssemblies()
                 .Prepend(type.Assembly.GetName())
-                .Any(r => r.Name.StartsWith("Nancy", StringComparison.OrdinalIgnoreCase));
+                .Any(r => r.Name == typeof(INancyEngine).Assembly.GetName().Name);
         }
 
     }

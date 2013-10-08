@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.AttributedModel;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
@@ -19,12 +19,8 @@ namespace Nancy.Bootstrappers.Mef
     /// <summary>
     /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework.
     /// </summary>
-    [InheritedExport(typeof(INancyBootstrapper))]
-    [InheritedExport(typeof(INancyModuleCatalog))]
-    public class NancyBootstrapper : NancyBootstrapperWithRequestContainerBase<CompositionContainer>
+    public class NancyBootstrapper : NancyBootstrapper<CompositionContainer>
     {
-
-        CompositionContainer parent;
 
         /// <summary>
         /// Initializes a new instance.
@@ -32,97 +28,102 @@ namespace Nancy.Bootstrappers.Mef
         public NancyBootstrapper()
             : base()
         {
-            
+
         }
+
+        /// <summary>
+        /// Create a default, unconfigured, container
+        /// </summary>
+        /// <returns>Container instance</returns>
+        protected override CompositionContainer GetApplicationContainer()
+        {
+            // default implementation
+            return new CompositionContainer(
+                CompositionOptions.DisableSilentRejection |
+                CompositionOptions.ExportCompositionService |
+                CompositionOptions.IsThreadSafe,
+                new NancyExportProvider());
+        }
+
+        /// <summary>
+        /// Creates a per-request container. The default MEF implemenetation simply creates a new <see cref="Composition"/>
+        /// container that uses the first one as a <see cref="ExportProvider"/> as well as an initial part catalog.
+        /// </summary>
+        /// <returns></returns>
+        protected override CompositionContainer CreateRequestContainer()
+        {
+            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+
+            return new CompositionContainer(
+                CompositionOptions.DisableSilentRejection |
+                CompositionOptions.ExportCompositionService |
+                CompositionOptions.IsThreadSafe,
+                new NancyExportProvider(ApplicationContainer),
+                ApplicationContainer);
+        }
+
+        protected override void ConfigureRequestContainer(CompositionContainer container, NancyContext context)
+        {
+            base.ConfigureRequestContainer(container, context);
+        }
+
+    }
+
+    /// <summary>
+    /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework.
+    /// </summary>
+    [InheritedExport(typeof(INancyBootstrapper))]
+    [InheritedExport(typeof(INancyModuleCatalog))]
+    public abstract class NancyBootstrapper<TContainer> : NancyBootstrapperWithRequestContainerBase<TContainer>
+        where TContainer : CompositionContainer
+    {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public NancyBootstrapper(CompositionContainer parent)
+        public NancyBootstrapper()
             : base()
         {
-            Contract.Requires<ArgumentNullException>(parent != null);
-            this.parent = parent;
+
         }
 
         #region Application Container
 
         /// <summary>
-        /// Gets the <see cref="AggregateCatalog"/> which provides Nancy parts to the container.
+        /// Provides a place to configure the newly created <see cref="CompositionContainer"/>.
         /// </summary>
-        public AggregateCatalog ApplicationCatalog { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="ExportProvider"/> which generates exports of Nancy parts for Nancy.
-        /// </summary>
-        public NancyExportProvider ApplicationExportProvider { get; private set; }
-
-        /// <summary>
-        /// Creates a new MEF container.
-        /// </summary>
-        /// <returns></returns>
-        protected sealed override CompositionContainer CreateApplicationContainer()
+        /// <param name="container"></param>
+        protected override void ConfigureApplicationContainer(TContainer container)
         {
-            return CreateApplicationContainer(null);
+
         }
 
         /// <summary>
-        /// Override to implement custom creation of the application wide <see cref="ComposablePartCatalog"/>s. The
-        /// default implementation of this method ensures that native Nancy parts are made available.
+        /// Returns <c>true</c> if the type given by <paramref cref="implementationType"/> is already available as an export
+        /// of <paramref cref="contractType"/> in the container.
         /// </summary>
-        /// <param name="parent"></param>
+        /// <param name="container"></param>
+        /// <param name="contractType"></param>
+        /// <param name="implementationType"></param>
         /// <returns></returns>
-        protected virtual AggregateCatalog CreateApplicationCatalogs(CompositionContainer parent)
+        bool IsTypeRegistered(CompositionContainer container, Type contractType, Type implementationType)
         {
-            Contract.Ensures(Contract.Result<AggregateCatalog>() != null);
-            return new AggregateCatalog(new NancyAssemblyCatalog(typeof(NancyEngine).Assembly));
-        }
-
-        /// <summary>
-        /// Override to implement custom creation of the application wide <see cref="NancyExportProvider"/>. The
-        /// default implementation of this method returns a <see cref="NancyExportProvider"/> that exposes the parts
-        /// configured in the catalog returned by the CreateApplicationCatalog method.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        protected virtual NancyExportProvider CreateApplicationExportProvider(CompositionContainer parent)
-        {
-            Contract.Ensures(Contract.Result<NancyExportProvider>() != null);
-            Contract.Ensures(ApplicationCatalog != null);
-            return new NancyExportProvider(new CatalogExportProvider(ApplicationCatalog = CreateApplicationCatalog(parent)));
-        }
-
-        /// <summary>
-        /// Override to implement custom creation of the application wide <see cref="CompositionContainer"/>. The
-        /// default implementation of this method returns a new <see cref="CompositionContainer"/> which first searches
-        /// for parts in the specified parent <see cref="CompositionContainer"/>, followed by parts returned by the
-        /// <see cref="NancyExportProvider"/> created in the CreateApplicationExportProvider method.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        protected virtual CompositionContainer CreateApplicationContainer(CompositionContainer parent)
-        {
-            // default container resolves against an application catalog, passing through a custom ExportProvider
-            var p1 = new CatalogExportProvider(ApplicationCatalog = CreateApplicationCatalog(parent));
-            var p2 = new NancyExportProvider(p1);
-            var cc = new CompositionContainer(
-                CompositionOptions.DisableSilentRejection |
-                CompositionOptions.ExportCompositionService |
-                CompositionOptions.IsThreadSafe, parent, ApplicationExportProvider = p2);
-            p1.SourceProvider = cc;
-
-            return cc;
-        }
-
-        /// <summary>
-        /// Provides a place to configure the newly created <see cref="CompositionContainer"/>. By default this method
-        /// registers a <see cref="NancyAssemblyCatalog"/> associated with the Nancy assembly. Override this method to
-        /// add additional part catalogs, or remove the default registration of the Nancy assembly.
-        /// </summary>
-        /// <param name="existingContainer"></param>
-        protected sealed override void ConfigureApplicationContainer(CompositionContainer existingContainer)
-        {
-            existingContainer.Catalog.Add(new NancyAssemblyCatalog(typeof(NancyEngine).Assembly));
+            return container.GetExports(
+                new ContractBasedImportDefinition(
+                    AttributedModelServices.GetContractName(contractType),
+                    AttributedModelServices.GetTypeIdentity(contractType),
+                    null,
+                    ImportCardinality.ZeroOrMore,
+                    false,
+                    false,
+                    CreationPolicy.Any))
+            .Select(i =>
+                ReflectionModelServices.GetExportingMember(i.Definition))
+            .Where(i =>
+                // export must be associated with a Type, implemented by the specified type
+                i.MemberType == MemberTypes.TypeInfo &&
+                i.GetAccessors().Any(j => ((TypeInfo)j).UnderlyingSystemType == implementationType.UnderlyingSystemType))
+            .Any();
         }
 
         /// <summary>
@@ -131,9 +132,34 @@ namespace Nancy.Bootstrappers.Mef
         /// cref="INancyModuleCatalog"/> manually.
         /// </summary>
         /// <param name="applicationContainer">Application container to register into</param>
-        protected override sealed void RegisterBootstrapperTypes(CompositionContainer applicationContainer)
+        protected override sealed void RegisterBootstrapperTypes(TContainer applicationContainer)
         {
             applicationContainer.ComposeParts(this);
+        }
+
+        /// <summary>
+        /// Adds the specified <see cref="ComposablePartCatalog"/> to the specified container. The default
+        /// implementation expects the container to have a <see cref="NancyExportProvider"/> in it's Providers
+        /// collection. To override this method, ensure that the catalog you add is added to a <see
+        /// cref="NancyExportProvider"/>. This ensures behavior expected by Nancy, such as default instance resolution,
+        /// is provided properly.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="catalog"></param>
+        protected virtual void AddCatalog(TContainer container, ComposablePartCatalog catalog)
+        {
+            Contract.Requires<ArgumentNullException>(container != null);
+            Contract.Requires<ArgumentNullException>(catalog != null);
+
+            var provider = container.Providers.OfType<NancyExportProvider>().FirstOrDefault();
+            if (provider == null)
+                throw new NullReferenceException("Container does not contain a NancyExportProvider. Override RegisterTypes to provide custom implementation.");
+
+            // add new catalog
+            provider.Providers.Add(new CatalogExportProvider(catalog)
+            {
+                SourceProvider = container,
+            });
         }
 
         /// <summary>
@@ -141,20 +167,20 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="typeRegistrations">Type registrations to register</param>
-        protected override sealed void RegisterTypes(CompositionContainer container, IEnumerable<TypeRegistration> typeRegistrations)
+        protected override void RegisterTypes(TContainer container, IEnumerable<TypeRegistration> typeRegistrations)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(typeRegistrations != null);
 
-            //
             var types = typeRegistrations
-                .Where(i => !ContainerHasExport(container, i.RegistrationType, i.ImplementationType))
+                .Where(i => i.ImplementationType.IsClass)
+                .Where(i => !IsTypeRegistered(container, i.RegistrationType, i.ImplementationType))
                 .SelectMany(i => new[] { i.ImplementationType, i.RegistrationType })
                 .Select(i => i.UnderlyingSystemType)
                 .Distinct()
                 .OrderBy(i => i.FullName);
             if (types.Any())
-                ((AggregateCatalog)container.Catalog).Catalogs.Add(new NancyTypeCatalog(types));
+                AddCatalog(container, new NancyTypeCatalog(types));
         }
 
         /// <summary>
@@ -163,13 +189,15 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
-        protected override sealed void RegisterCollectionTypes(CompositionContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
+        protected override sealed void RegisterCollectionTypes(TContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(collectionTypeRegistrations != null);
 
+            // transform for RegisterTypes implementation
             RegisterTypes(container, collectionTypeRegistrations
-                .SelectMany(i => i.ImplementationTypes.Select(j => new TypeRegistration(i.RegistrationType, j))));
+                .SelectMany(i => i.ImplementationTypes
+                    .Select(j => new TypeRegistration(i.RegistrationType, j))));
         }
 
         /// <summary>
@@ -177,12 +205,16 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="instanceRegistrations">Instance registration types</param>
-        protected override void RegisterInstances(CompositionContainer container, IEnumerable<InstanceRegistration> instanceRegistrations)
+        protected override void RegisterInstances(TContainer container, IEnumerable<InstanceRegistration> instanceRegistrations)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(instanceRegistrations != null);
 
-            RegisterTypes(container, instanceRegistrations.Select(i => new TypeRegistration(i.RegistrationType, i.Implementation.GetType())));
+            // register the types
+            RegisterTypes(container, instanceRegistrations
+                .Select(i => new TypeRegistration(i.RegistrationType, i.Implementation.GetType())));
+
+            // and export the instances
             foreach (var r in instanceRegistrations)
                 container.ComposeExportedValue(r.RegistrationType, r.Implementation);
         }
@@ -192,29 +224,16 @@ namespace Nancy.Bootstrappers.Mef
         #region Request Container
 
         /// <summary>
-        /// Creates a per-request container. The default MEF implemenetation simply creates a new <see cref="Composition"/>
-        /// container that uses the first one as a <see cref="ApplicationExportProvider"/> as well as an initial part catalog.
-        /// </summary>
-        /// <returns></returns>
-        protected override CompositionContainer CreateRequestContainer()
-        {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
-
-            return new CompositionContainer(
-                new AggregateCatalog(ApplicationContainer.Catalog),
-                CompositionOptions.IsThreadSafe | CompositionOptions.ExportCompositionService,
-                ApplicationContainer);
-        }
-
-        /// <summary>
         /// Registers per-request modules in the per-request container.
         /// </summary>
         /// <param name="container"></param>
         /// <param name="moduleRegistrationTypes"></param>
-        protected override void RegisterRequestContainerModules(CompositionContainer container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
+        protected override void RegisterRequestContainerModules(TContainer container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(moduleRegistrationTypes != null);
+
+            RegisterModules(container, moduleRegistrationTypes);
         }
 
         #endregion
@@ -228,7 +247,7 @@ namespace Nancy.Bootstrappers.Mef
 
             return ApplicationContainer.GetExportedValue<IDiagnostics>();
         }
-            
+
         /// <summary>
         /// Gets all registered application startup tasks.
         /// </summary>
@@ -262,7 +281,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <summary>
         /// Retrieve all module instances from the container.
         /// </summary>
-        protected override sealed IEnumerable<INancyModule> GetAllModules(CompositionContainer container)
+        protected override sealed IEnumerable<INancyModule> GetAllModules(TContainer container)
         {
             Contract.Requires<ArgumentNullException>(container != null);
 
@@ -274,7 +293,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to use</param>
         /// <param name="moduleType">Type of the module</param>
-        protected override INancyModule GetModule(CompositionContainer container, Type moduleType)
+        protected override INancyModule GetModule(TContainer container, Type moduleType)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(moduleType != null);

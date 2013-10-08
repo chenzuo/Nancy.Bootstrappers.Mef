@@ -61,6 +61,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <BuildPackage>true</BuildPackage>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -69,11 +70,11 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeOnlyPublicSurface>True</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
     <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
@@ -102,6 +103,7 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>bin\Release\Nancy.Bootstrappers.Mef.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Nancy">
@@ -116,7 +118,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Composition\Hosting\DynamicAggregateExportProvider.cs" />
+    <Compile Include="Composition\Hosting\DynamicFilteredCatalog.cs" />
     <Compile Include="Composition\Hosting\ExportProviderCollection.cs" />
+    <Compile Include="Composition\Hosting\NancyDefaultAssemblyCatalog.cs" />
+    <Compile Include="Composition\Hosting\CatalogUtils.cs" />
+    <Compile Include="Extensions\ExportProviderExtensions.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Composition\Hosting\NancyApplicationCatalog.cs" />
@@ -131,10 +137,12 @@
     <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Nancy.Bootstrappers.Mef.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\GitFlowVersionTask.0.3.0\Build\GitFlowVersionTask.targets" Condition="Exists('..\packages\GitFlowVersionTask.0.3.0\Build\GitFlowVersionTask.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

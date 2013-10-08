@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
@@ -10,7 +12,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
 
     /// <summary>
     /// Assembly catalog that provides export of Nancy implementations that are not decorated with standard
-    /// MEF attributes. The <see cref="NancyBootstrapperContext"/> is used to virtualize MEF attributes.
+    /// MEF attributes. The <see cref="NancyReflectionContext"/> is used to virtualize MEF attributes.
     /// </summary>
     public class NancyAssemblyCatalog : AssemblyCatalog
     {
@@ -33,6 +35,12 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
             : base(codeBase, new NancyReflectionContext())
         {
             Contract.Requires<NullReferenceException>(codeBase != null);
+        }
+
+        public override IEnumerable<Tuple<ComposablePartDefinition, ExportDefinition>> GetExports(ImportDefinition definition)
+        {
+            //return CatalogUtils.GetExports(base.GetExports, definition);
+            return base.GetExports(definition);
         }
 
     }

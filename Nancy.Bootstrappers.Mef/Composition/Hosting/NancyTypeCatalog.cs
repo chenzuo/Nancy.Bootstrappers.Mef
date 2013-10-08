@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 
 using Nancy.Bootstrappers.Mef.Composition.Registration;
@@ -33,6 +34,12 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
             : base(types, new NancyReflectionContext())
         {
             Contract.Requires<NullReferenceException>(types != null);
+        }
+
+        public override IEnumerable<Tuple<ComposablePartDefinition, ExportDefinition>> GetExports(ImportDefinition definition)
+        {
+            //return CatalogUtils.GetExports(base.GetExports, definition);
+            return base.GetExports(definition);
         }
 
     }

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Nancy.ViewEngines;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Hosting
 {
 
     /// <summary>
-    /// Wraps the user provided <see cref="CompositionContainer"/> in order to implement Nancy specific policy, such
-    /// as delivery of single-instance imports though multiple are available.
+    /// Provides Nancy exports for a MEF container. Nancy requires that we deal with multiple implementations of the
+    /// same contract, as well as support adding exports on the fly.
     /// </summary>
     public class NancyExportProvider : DynamicAggregateExportProvider
     {
@@ -35,20 +37,31 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
             Contract.Requires<ArgumentNullException>(providers != null);
         }
 
-        protected override IEnumerable<Export> GetExportsCore(ImportDefinition definition, AtomicComposition atomicComposition)
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public NancyExportProvider()
+            : this(Enumerable.Empty<ExportProvider>())
+        {
+
+        }
+
+        protected override IEnumerable<Export> GetExportsCoreExactlyOne(ImportDefinition definition, AtomicComposition atomicComposition)
         {
             // replace ZeroOrOne with ZeroOrMore to prevent errors down the chain; we'll grab the first
-            if (definition.Cardinality == ImportCardinality.ExactlyOne)
-                return base.GetExportsCore(new ImportDefinition(
+            var export = GetExportsCoreZeroOrMore(new ImportDefinition(
                     definition.Constraint,
                     definition.ContractName,
                     ImportCardinality.ZeroOrMore,
                     definition.IsRecomposable,
                     definition.IsPrerequisite,
                     definition.Metadata), atomicComposition)
-                    .Take(1);
+                .FirstOrDefault();
+            if (export != null)
+                yield return export;
 
-            return base.GetExportsCore(definition, atomicComposition);
+            if (definition.ContractName == AttributedModelServices.GetContractName(typeof(IFileSystemReader)))
+                yield return new Export(definition.ContractName, () => new DefaultFileSystemReader());
         }
 
     }
