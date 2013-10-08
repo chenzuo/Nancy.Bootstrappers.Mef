@@ -11,7 +11,7 @@ namespace Nancy.Bootstrappers.Mef.TestHost
     {
 
 
-        readonly Uri baseUri = new Uri("http://localhost:12333/nancy");
+        readonly Uri baseUri = new Uri("http://localhost:12333/nancy/");
         readonly AggregateCatalog catalog;
         readonly CompositionContainer container;
         NancyHost nancy;
@@ -31,6 +31,13 @@ namespace Nancy.Bootstrappers.Mef.TestHost
             // configure nancy
             nancy = new NancyHost(
                 new NancyBootstrapper(),
+                new HostConfiguration()
+                {
+                    UrlReservations = new UrlReservations()
+                    {
+                        CreateAutomatically = true,
+                    }
+                },
                 baseUri);
             nancy.Start();
         }

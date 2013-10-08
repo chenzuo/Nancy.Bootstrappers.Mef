@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef.Tests", "Nancy.Bootstrappers.Mef.Tests\Nancy.Bootstrappers.Mef.Tests.csproj", "{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Mef.TestHost", "Nancy.Bootstrappers.Mef.TestHost\Nancy.Bootstrappers.Mef.TestHost.csproj", "{2F8ADD4B-7459-4D17-B095-81EAFFF88008}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53070CA5-930F-4BFB-AF24-6E49F6A2ABC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F8ADD4B-7459-4D17-B095-81EAFFF88008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F8ADD4B-7459-4D17-B095-81EAFFF88008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F8ADD4B-7459-4D17-B095-81EAFFF88008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F8ADD4B-7459-4D17-B095-81EAFFF88008}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
