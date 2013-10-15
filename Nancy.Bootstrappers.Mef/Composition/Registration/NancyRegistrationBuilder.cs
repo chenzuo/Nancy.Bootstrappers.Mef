@@ -6,7 +6,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 
-using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Registration
@@ -82,7 +81,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(TypeHelper.ReferencesNancy(type)))
+            if (!(type.ReferencesNancy()))
                 return false;
 
             // evaluate other arbitrary constraints
@@ -122,7 +121,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(b &= TypeHelper.ReferencesNancy(type)))
+            if (!(b &= type.ReferencesNancy()))
                 return false;
 
             // evaluate other arbitrary constraints
