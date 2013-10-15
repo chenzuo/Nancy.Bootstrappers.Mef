@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.Contracts;
 using System.Linq;
+
 using Nancy.ViewEngines;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Hosting
