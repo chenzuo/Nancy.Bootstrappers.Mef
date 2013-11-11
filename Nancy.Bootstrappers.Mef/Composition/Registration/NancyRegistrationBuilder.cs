@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 
+using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Registration
@@ -81,7 +82,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(type.ReferencesNancy()))
+            if (!(TypeHelper.ReferencesNancy(type)))
                 return false;
 
             // evaluate other arbitrary constraints
@@ -121,7 +122,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(b &= type.ReferencesNancy()))
+            if (!(b &= TypeHelper.ReferencesNancy(type)))
                 return false;
 
             // evaluate other arbitrary constraints
@@ -192,11 +193,11 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
 
                 Type importManyType = null;
 
-                if (parameter.ParameterType.IsGenericType() &&
+                if (parameter.ParameterType.IsGenericType &&
                     parameter.ParameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                     importManyType = parameter.ParameterType.GetGenericArguments()[0];
 
-                if (parameter.ParameterType.IsGenericType() &&
+                if (parameter.ParameterType.IsGenericType &&
                     parameter.ParameterType.GetGenericTypeDefinition() == typeof(ICollection<>))
                     importManyType = parameter.ParameterType.GetGenericArguments()[0];
 
@@ -217,7 +218,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
 
                 Type funcType = null;
 
-                if (parameter.ParameterType.IsGenericType() &&
+                if (parameter.ParameterType.IsGenericType &&
                     parameter.ParameterType.GetGenericArguments().Length == 1 &&
                     parameter.ParameterType.GetGenericTypeDefinition() == typeof(Func<>))
                     funcType = parameter.ParameterType.GetGenericArguments()[0];

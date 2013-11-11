@@ -13,25 +13,25 @@ namespace Nancy.Bootstrappers.Mef.Tests
         [TestMethod]
         public void ReferencesNancy_TrueFromInsideTest()
         {
-            Assert.IsTrue(TypeExtensions.ReferencesNancy(typeof(NancyEngine)));
+            Assert.IsTrue(TypeHelper.ReferencesNancy(typeof(INancyEngine)));
         }
 
         [TestMethod]
         public void ReferencesNancy_TrueFromOutsideTest()
         {
-            Assert.IsTrue(TypeExtensions.ReferencesNancy(typeof(TypeHelperTests)));
+            Assert.IsTrue(TypeHelper.ReferencesNancy(typeof(TypeHelperTests)));
         }
 
         [TestMethod]
         public void ReferencesNancy_TrueFromInterfaceTest()
         {
-            Assert.IsTrue(TypeExtensions.ReferencesNancy(typeof(Tuple<INancyEngine>)));
+            Assert.IsTrue(TypeHelper.ReferencesNancy(typeof(Tuple<INancyEngine>)));
         }
 
         [TestMethod]
         public void ReferencesNancy_FalseTest()
         {
-            Assert.IsFalse(TypeExtensions.ReferencesNancy(typeof(List<object>)));
+            Assert.IsFalse(TypeHelper.ReferencesNancy(typeof(List<object>)));
         }
 
     }

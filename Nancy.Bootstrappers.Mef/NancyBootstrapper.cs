@@ -7,7 +7,6 @@ using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
