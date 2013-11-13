@@ -78,9 +78,21 @@ namespace Nancy.Bootstrappers.Mef.Tests.Composition.Hosting
         }
 
         [TestMethod]
+        public void GetExports_RouteDescriptionProvider()
+        {
+            Assert.AreEqual(1, Container.GetExports<IRouteDescriptionProvider>().Count());
+        }
+
+        [TestMethod]
         public void GetExports_RouteResolver()
         {
             Assert.AreEqual(1, Container.GetExports<IRouteResolver>().Count());
+        }
+
+        [TestMethod]
+        public void GetExports_RouteInvoker()
+        {
+            Assert.AreEqual(1, Container.GetExports<IRouteInvoker>().Count());
         }
 
         [TestMethod]

@@ -69,10 +69,10 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        static internal bool IsNancyPart(Type type)
+        static internal bool IsExportableNancyPart(Type type)
         {
             Contract.Requires<ArgumentNullException>(type != null);
-
+            var name = type.Name;
             // we are a MEF assembly, we aren't Nancy parts
             if (type.Assembly == typeof(NancyBootstrapper).Assembly)
                 return false;
@@ -82,7 +82,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                 return false;
 
             // type must be in assembly which references Nancy, or at least a Nancy prefixed component
-            if (!(TypeHelper.ReferencesNancy(type)))
+            if (!TypeHelper.ReferencesNancy(type))
                 return false;
 
             // evaluate other arbitrary constraints
@@ -90,18 +90,16 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
             if (!passed)
                 return false;
 
-            // if the type has any MEF Export attributes on it, we should ignore it; it should be handled by a standard
-            // MEF catalog
-            var referencesMef = type.Assembly.GetReferencedAssemblies()
-                .Any(i => i.Name == typeof(ExportAttribute).Assembly.GetName().Name);
-
-            var exports = type
+            var implementedTypes = type
                 .Recurse(i => i.BaseType)
-                .SelectMany(i => i.GetMembers(BindingFlags.Instance | BindingFlags.Public).Prepend(i))
-                .SelectMany(i => i.GetCustomAttributes<ExportAttribute>())
-                .ToDebugList();
+                .Concat(type.GetInterfaces());
 
-            if (!(!referencesMef || !exports.Any()))
+            // is the type already exported?
+            if (implementedTypes.Any(i => i.GetCustomAttributes<ExportAttribute>(true).Any()))
+                return false;
+
+            // does the type implement or inherit from anything in Nancy itself?
+            if (!implementedTypes.Any(i => i.Assembly == typeof(NancyEngine).Assembly))
                 return false;
 
             return true;
@@ -151,7 +149,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
                         .AsContractName("FuncFactory:" + AttributedModelServices.GetContractName(typeof(Func<>))));
 
             // export any exportable parts
-            ForTypesMatching(i => IsNancyPart(i))
+            ForTypesMatching(i => IsExportableNancyPart(i))
                 .AddMetadata(NancyMetadataKeys.RegistrationBuilder, this)
                 .Export()
                 .ExportInterfaces(i => IsNancyContract(i), (i, j) => j

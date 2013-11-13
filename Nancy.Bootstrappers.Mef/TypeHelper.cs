@@ -7,7 +7,7 @@ using Nancy.Bootstrappers.Mef.Extensions;
 namespace Nancy.Bootstrappers.Mef
 {
 
-    static class TypeHelper
+    internal static class TypeHelper
     {
 
         /// <summary>

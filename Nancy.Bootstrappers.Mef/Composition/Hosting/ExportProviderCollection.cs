@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 
@@ -13,8 +11,8 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
     public sealed class ExportProviderCollection : ICollection<ExportProvider>, INotifyCollectionChanged
     {
 
-        ReaderWriterLockSlim rw = new ReaderWriterLockSlim();
-        List<ExportProvider> providers = new List<ExportProvider>();
+        readonly ReaderWriterLockSlim rw = new ReaderWriterLockSlim();
+        readonly List<ExportProvider> providers = new List<ExportProvider>();
 
         public void Add(ExportProvider item)
         {
@@ -64,8 +62,6 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
 
         public bool Remove(ExportProvider item)
         {
-            Contract.Requires<ArgumentNullException>(item != null);
-
             var b = providers.Remove(item);
             if (b)
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));

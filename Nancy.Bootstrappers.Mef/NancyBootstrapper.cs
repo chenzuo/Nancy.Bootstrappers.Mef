@@ -51,7 +51,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns></returns>
         protected override CompositionContainer CreateRequestContainer()
         {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+            Contract.Assert(ApplicationContainer != null);
 
             return new CompositionContainer(
                 CompositionOptions.DisableSilentRejection |
@@ -163,8 +163,8 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="typeRegistrations">Type registrations to register</param>
         protected override void RegisterTypes(TContainer container, IEnumerable<TypeRegistration> typeRegistrations)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
-            Contract.Requires<ArgumentNullException>(typeRegistrations != null);
+            Contract.Assert(container != null);
+            Contract.Assert(typeRegistrations != null);
 
             var types = typeRegistrations
                 .Where(i => i.ImplementationType.IsClass)
@@ -185,8 +185,8 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
         protected override sealed void RegisterCollectionTypes(TContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
-            Contract.Requires<ArgumentNullException>(collectionTypeRegistrations != null);
+            Contract.Assert(container != null);
+            Contract.Assert(collectionTypeRegistrations != null);
 
             // transform for RegisterTypes implementation
             RegisterTypes(container, collectionTypeRegistrations
@@ -201,8 +201,8 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="instanceRegistrations">Instance registration types</param>
         protected override void RegisterInstances(TContainer container, IEnumerable<InstanceRegistration> instanceRegistrations)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
-            Contract.Requires<ArgumentNullException>(instanceRegistrations != null);
+            Contract.Assert(container != null);
+            Contract.Assert(instanceRegistrations != null);
 
             // register the types
             RegisterTypes(container, instanceRegistrations
@@ -224,8 +224,8 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="moduleRegistrationTypes"></param>
         protected override void RegisterRequestContainerModules(TContainer container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
-            Contract.Requires<ArgumentNullException>(moduleRegistrationTypes != null);
+            Contract.Assert(container != null);
+            Contract.Assert(moduleRegistrationTypes != null);
 
             RegisterModules(container, moduleRegistrationTypes);
         }
@@ -237,7 +237,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         protected override IDiagnostics GetDiagnostics()
         {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+            Contract.Assert(ApplicationContainer != null);
 
             return ApplicationContainer.GetExportedValue<IDiagnostics>();
         }
@@ -247,7 +247,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         protected override IEnumerable<IApplicationStartup> GetApplicationStartupTasks()
         {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+            Contract.Assert(ApplicationContainer != null);
 
             return ApplicationContainer.GetExportedValues<IApplicationStartup>();
         }
@@ -257,7 +257,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         protected override IEnumerable<IApplicationRegistrations> GetApplicationRegistrationTasks()
         {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+            Contract.Assert(ApplicationContainer != null);
 
             return ApplicationContainer.GetExportedValues<IApplicationRegistrations>();
         }
@@ -267,7 +267,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         protected override sealed INancyEngine GetEngineInternal()
         {
-            Contract.Requires<ArgumentNullException>(ApplicationContainer != null);
+            Contract.Assert(ApplicationContainer != null);
 
             return ApplicationContainer.GetExportedValueOrDefault<INancyEngine>();
         }
@@ -277,7 +277,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         protected override sealed IEnumerable<INancyModule> GetAllModules(TContainer container)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
+            Contract.Assert(container != null);
 
             return container.GetExportedValues<INancyModule>();
         }
@@ -289,8 +289,8 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="moduleType">Type of the module</param>
         protected override INancyModule GetModule(TContainer container, Type moduleType)
         {
-            Contract.Requires<ArgumentNullException>(container != null);
-            Contract.Requires<ArgumentNullException>(moduleType != null);
+            Contract.Assert(container != null);
+            Contract.Assert(moduleType != null);
 
             return container.GetExports<INancyModule>()
                 .Select(i => i.Value)
