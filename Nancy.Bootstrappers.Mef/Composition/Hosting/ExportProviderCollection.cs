@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Hosting

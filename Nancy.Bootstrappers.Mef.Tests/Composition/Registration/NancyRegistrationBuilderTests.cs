@@ -39,6 +39,7 @@ namespace Nancy.Bootstrappers.Mef.Tests.Composition.Registration
             var a = context.MapType(typeof(Nancy.NancyEngine).GetTypeInfo())
                 .GetCustomAttributes<ExportAttribute>().ToArray();
             Assert.IsTrue(a.Any(i => i.ContractType == null), "Could not resolve concrete type.");
+
             Assert.IsTrue(a.Any(i => i.ContractType == typeof(INancyEngine)), "Could not resolve expected interface.");
             Assert.IsTrue(a.Count() == 2);
         }

@@ -6,7 +6,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 
-using Nancy.Bootstrappers.Mef.Composition.Hosting;
 using Nancy.Bootstrappers.Mef.Extensions;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Registration
@@ -73,6 +72,7 @@ namespace Nancy.Bootstrappers.Mef.Composition.Registration
         {
             Contract.Requires<ArgumentNullException>(type != null);
             var name = type.Name;
+
             // we are a MEF assembly, we aren't Nancy parts
             if (type.Assembly == typeof(NancyBootstrapper).Assembly)
                 return false;
