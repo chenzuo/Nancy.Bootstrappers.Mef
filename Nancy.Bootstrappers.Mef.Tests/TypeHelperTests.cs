@@ -13,7 +13,7 @@ namespace Nancy.Bootstrappers.Mef.Tests
         [TestMethod]
         public void ReferencesNancy_TrueFromInsideTest()
         {
-            Assert.IsTrue(TypeHelper.ReferencesNancy(typeof(NancyEngine)));
+            Assert.IsTrue(TypeHelper.ReferencesNancy(typeof(INancyEngine)));
         }
 
         [TestMethod]

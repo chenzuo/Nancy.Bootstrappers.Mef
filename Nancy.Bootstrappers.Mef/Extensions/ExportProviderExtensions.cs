@@ -25,6 +25,7 @@ namespace Nancy.Bootstrappers.Mef
         {
             Contract.Requires<ArgumentNullException>(provider != null);
             Contract.Requires<ArgumentNullException>(definition != null);
+
             IEnumerable<Export> exports;
             provider.TryGetExports(definition, atomicComposition, out exports);
             return exports;

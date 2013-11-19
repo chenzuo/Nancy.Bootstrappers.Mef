@@ -7,7 +7,7 @@ using Nancy.Bootstrappers.Mef.Extensions;
 namespace Nancy.Bootstrappers.Mef
 {
 
-    internal static class TypeHelper
+    static class TypeExtensions
     {
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool ReferencesNancy(Type type)
+        public static bool ReferencesNancy(this Type type)
         {
             Contract.Requires<ArgumentNullException>(type != null);
 
