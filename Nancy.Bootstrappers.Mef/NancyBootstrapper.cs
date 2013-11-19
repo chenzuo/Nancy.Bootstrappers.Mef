@@ -19,8 +19,11 @@ namespace Nancy.Bootstrappers.Mef
     /// <summary>
     /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework.
     /// </summary>
-    public class NancyBootstrapper : NancyBootstrapper<CompositionContainer>
+    public class NancyBootstrapper :
+        NancyBootstrapper<CompositionContainer>
     {
+
+        readonly CompositionContainer container;
 
         /// <summary>
         /// Initializes a new instance.
@@ -32,11 +35,28 @@ namespace Nancy.Bootstrappers.Mef
         }
 
         /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="container"></param>
+        public NancyBootstrapper(CompositionContainer container)
+            : this()
+        {
+            this.container = container;
+        }
+
+        /// <summary>
         /// Create a default, unconfigured, container
         /// </summary>
         /// <returns>Container instance</returns>
         protected override CompositionContainer GetApplicationContainer()
         {
+            var p = new List<ExportProvider>();
+
+            if (container != null)
+                p.Add(container);
+
+            p.Add(new NancyExportProvider());
+
             // default implementation
             return new CompositionContainer(
                 CompositionOptions.DisableSilentRejection |
