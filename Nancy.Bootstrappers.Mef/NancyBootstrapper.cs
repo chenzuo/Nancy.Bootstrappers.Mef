@@ -450,6 +450,9 @@ namespace Nancy.Bootstrappers.Mef
                 .FirstOrDefault(i => i.GetType() == moduleType);
         }
 
+        /// <summary>
+        /// Disposes of the instance.
+        /// </summary>
         public new void Dispose()
         {
             base.Dispose();
