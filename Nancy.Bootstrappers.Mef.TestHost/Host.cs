@@ -30,7 +30,7 @@ namespace Nancy.Bootstrappers.Mef.TestHost
         {
             // configure nancy
             nancy = new NancyHost(
-                new NancyBootstrapper(),
+                new NancyBootstrapper(new CompositionContainer(new ApplicationCatalog())),
                 new HostConfiguration()
                 {
                     UrlReservations = new UrlReservations()

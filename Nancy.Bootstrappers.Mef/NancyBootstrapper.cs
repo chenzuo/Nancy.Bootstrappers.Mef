@@ -24,45 +24,70 @@ namespace Nancy.Bootstrappers.Mef
     {
 
         readonly CompositionContainer container;
+        readonly bool containerOwner;
+
+        CompositionContainer nancyContainer;
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new instance. Creates a container that scans for all assemblies in the current <see
+        /// cref="AppDomain"/>.
         /// </summary>
         public NancyBootstrapper()
-            : base()
+            : this(createDefaultContainer: true)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new instance. Optionally specifies whether a default container should be created. By default
+        /// a container that scans for all assemblies in the current <see cref="AppDomain"/> is used.
+        /// </summary>
+        public NancyBootstrapper(bool createDefaultContainer = true)
+            : base()
+        {
+            if (createDefaultContainer)
+            {
+                this.container = new CompositionContainer(new ApplicationCatalog());
+                this.containerOwner = true;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance with a specified container.
         /// </summary>
         /// <param name="container"></param>
         public NancyBootstrapper(CompositionContainer container)
-            : this()
+            : base()
         {
+            Contract.Requires<ArgumentNullException>(container != null);
+
             this.container = container;
         }
 
         /// <summary>
-        /// Create a default, unconfigured, container
+        /// Creates a Nancy-specific <see cref="CompositionContainer"/> containing the <see
+        /// cref="NancyExportProvider"/>. This container serves merely as a holder for the <see
+        /// cref="NancyExportProvider"/> and should itself home no exports.
         /// </summary>
-        /// <returns>Container instance</returns>
+        /// <returns></returns>
         protected override CompositionContainer GetApplicationContainer()
         {
-            var p = new List<ExportProvider>();
+            // parent export providers
+            var providers = new List<ExportProvider>()
+            {
+                new NancyExportProvider(),
+            };
 
+            // if we have a specified container, we use it as a source as well
             if (container != null)
-                p.Add(container);
-
-            p.Add(new NancyExportProvider());
+                providers.Add(container);
 
             // default implementation
-            return new CompositionContainer(
+            return nancyContainer = new CompositionContainer(
                 CompositionOptions.DisableSilentRejection |
                 CompositionOptions.ExportCompositionService |
                 CompositionOptions.IsThreadSafe,
-                new NancyExportProvider());
+                providers.ToArray());
         }
 
         /// <summary>
@@ -78,8 +103,22 @@ namespace Nancy.Bootstrappers.Mef
                 CompositionOptions.DisableSilentRejection |
                 CompositionOptions.ExportCompositionService |
                 CompositionOptions.IsThreadSafe,
-                new NancyExportProvider(ApplicationContainer),
+                new NancyExportProvider(),
                 ApplicationContainer);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            // dispose of user provided, or default container
+            if (container != null)
+                if (containerOwner)
+                    container.Dispose();
+
+            // dispose of Nancy specific container
+            if (nancyContainer != null)
+                nancyContainer.Dispose();
         }
 
     }
@@ -89,12 +128,15 @@ namespace Nancy.Bootstrappers.Mef
     /// </summary>
     [InheritedExport(typeof(INancyBootstrapper))]
     [InheritedExport(typeof(INancyModuleCatalog))]
-    public abstract class NancyBootstrapper<TContainer> : NancyBootstrapperWithRequestContainerBase<TContainer>
-        where TContainer : CompositionContainer
+    public abstract class NancyBootstrapper<TContainer> :
+        NancyBootstrapperWithRequestContainerBase<TContainer>,
+        IDisposable
+        where TContainer : CompositionContainer, IDisposable
     {
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new instance. Optionally specifies whether a default container should be created. By default
+        /// a container that scans for all assemblies in the current <see cref="AppDomain"/> is used.
         /// </summary>
         public NancyBootstrapper()
             : base()
@@ -316,6 +358,11 @@ namespace Nancy.Bootstrappers.Mef
             return container.GetExports<INancyModule>()
                 .Select(i => i.Value)
                 .FirstOrDefault(i => i.GetType() == moduleType);
+        }
+
+        public virtual void Dispose()
+        {
+
         }
 
     }
