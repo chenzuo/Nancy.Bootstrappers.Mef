@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition.Hosting;
-﻿using System.Linq;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading;
 
 namespace Nancy.Bootstrappers.Mef.Composition.Hosting
@@ -17,26 +19,22 @@ namespace Nancy.Bootstrappers.Mef.Composition.Hosting
         public void Add(ExportProvider item)
         {
             providers.Add(item);
-
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         public void AddRange(IEnumerable<ExportProvider> items)
         {
+            Contract.Requires<ArgumentNullException>(items != null);
+
             var all = items.ToList();
-
             providers.AddRange(all);
-
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, all));
         }
 
         public void Clear()
         {
-            List<ExportProvider> all;
-
-            all = providers.ToList();
+            var all = providers.ToList();
             providers.Clear();
-
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, all));
         }
 

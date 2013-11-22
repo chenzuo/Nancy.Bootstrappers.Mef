@@ -17,23 +17,19 @@ namespace Nancy.Bootstrappers.Mef
 {
 
     /// <summary>
-    /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework.
+    /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework. This non-generic version
+    /// operates directly with MEF <see cref="CompositionContainer"/> types.
     /// </summary>
     public class NancyBootstrapper :
         NancyBootstrapper<CompositionContainer>
     {
-
-        readonly CompositionContainer container;
-        readonly bool containerOwner;
-
-        CompositionContainer nancyContainer;
 
         /// <summary>
         /// Initializes a new instance. Creates a container that scans for all assemblies in the current <see
         /// cref="AppDomain"/>.
         /// </summary>
         public NancyBootstrapper()
-            : this(createDefaultContainer: true)
+            : base()
         {
 
         }
@@ -43,13 +39,9 @@ namespace Nancy.Bootstrappers.Mef
         /// a container that scans for all assemblies in the current <see cref="AppDomain"/> is used.
         /// </summary>
         public NancyBootstrapper(bool createDefaultContainer = true)
-            : base()
+            : base(createDefaultContainer)
         {
-            if (createDefaultContainer)
-            {
-                this.container = new CompositionContainer(new ApplicationCatalog());
-                this.containerOwner = true;
-            }
+
         }
 
         /// <summary>
@@ -57,20 +49,68 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container"></param>
         public NancyBootstrapper(CompositionContainer container)
-            : base()
+            : base(container)
         {
             Contract.Requires<ArgumentNullException>(container != null);
-
-            this.container = container;
         }
 
         /// <summary>
-        /// Creates a Nancy-specific <see cref="CompositionContainer"/> containing the <see
-        /// cref="NancyExportProvider"/>. This container serves merely as a holder for the <see
-        /// cref="NancyExportProvider"/> and should itself home no exports.
+        /// Creates the default container type.
         /// </summary>
         /// <returns></returns>
-        protected override CompositionContainer GetApplicationContainer()
+        protected override CompositionContainer CreateDefaultContainer()
+        {
+            return new CompositionContainer(new ApplicationCatalog());
+        }
+
+    }
+
+    /// <summary>
+    /// Serves as a bootstrapper for Nancy when using the Managed Extensibility Framework. This generic version
+    /// operates with the specified container type.
+    /// </summary>
+    public abstract class NancyBootstrapper<TContainer> :
+        NancyBootstrapper<TContainer, CompositionContainer>
+        where TContainer : CompositionContainer
+    {
+
+        /// <summary>
+        /// Initializes a new instance. Creates a container that scans for all assemblies in the current <see
+        /// cref="AppDomain"/>.
+        /// </summary>
+        public NancyBootstrapper()
+            : base()
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance. Optionally specifies whether a default container should be created. By default
+        /// a container that scans for all assemblies in the current <see cref="AppDomain"/> is used.
+        /// </summary>
+        public NancyBootstrapper(bool createDefaultContainer = true)
+            : base(createDefaultContainer)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance with a specified container.
+        /// </summary>
+        /// <param name="container"></param>
+        public NancyBootstrapper(TContainer container)
+            : base(container)
+        {
+            Contract.Requires<ArgumentNullException>(container != null);
+        }
+
+        /// <summary>
+        /// Gets the internal container instance. Creates a default <see cref="CompositionContainer"/> type with
+        /// a <see cref="NancyExportProvider"/> available. This is responsible for resolving Nancy built-in types.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        protected override CompositionContainer GetInternalContainer(TContainer container)
         {
             // parent export providers
             var providers = new List<ExportProvider>()
@@ -83,7 +123,7 @@ namespace Nancy.Bootstrappers.Mef
                 providers.Add(container);
 
             // default implementation
-            return nancyContainer = new CompositionContainer(
+            return new CompositionContainer(
                 CompositionOptions.DisableSilentRejection |
                 CompositionOptions.ExportCompositionService |
                 CompositionOptions.IsThreadSafe,
@@ -107,20 +147,6 @@ namespace Nancy.Bootstrappers.Mef
                 ApplicationContainer);
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            // dispose of user provided, or default container
-            if (container != null)
-                if (containerOwner)
-                    container.Dispose();
-
-            // dispose of Nancy specific container
-            if (nancyContainer != null)
-                nancyContainer.Dispose();
-        }
-
     }
 
     /// <summary>
@@ -128,29 +154,93 @@ namespace Nancy.Bootstrappers.Mef
     /// </summary>
     [InheritedExport(typeof(INancyBootstrapper))]
     [InheritedExport(typeof(INancyModuleCatalog))]
-    public abstract class NancyBootstrapper<TContainer> :
-        NancyBootstrapperWithRequestContainerBase<TContainer>,
+    public abstract class NancyBootstrapper<TContainer, TInternalContainer> :
+        NancyBootstrapperWithRequestContainerBase<TInternalContainer>,
         IDisposable
-        where TContainer : CompositionContainer, IDisposable
+        where TContainer : CompositionContainer
+        where TInternalContainer : CompositionContainer
     {
+
+        TContainer container;
+        readonly bool containerOwner;
+        TInternalContainer internalContainer;
+
+        /// <summary>
+        /// Initializes a new instance. Creates a container that scans for all assemblies in the current <see
+        /// cref="AppDomain"/>.
+        /// </summary>
+        public NancyBootstrapper()
+            : this(createDefaultContainer: true)
+        {
+
+        }
 
         /// <summary>
         /// Initializes a new instance. Optionally specifies whether a default container should be created. By default
         /// a container that scans for all assemblies in the current <see cref="AppDomain"/> is used.
         /// </summary>
-        public NancyBootstrapper()
+        public NancyBootstrapper(bool createDefaultContainer = true)
             : base()
         {
+            if (createDefaultContainer)
+            {
+                this.container = CreateDefaultContainer();
+                this.containerOwner = true;
+            }
+        }
 
+        /// <summary>
+        /// Initializes a new instance with a specified container.
+        /// </summary>
+        /// <param name="container"></param>
+        public NancyBootstrapper(TContainer container)
+            : base()
+        {
+            Contract.Requires<ArgumentNullException>(container != null);
+
+            this.container = container;
         }
 
         #region Application Container
 
         /// <summary>
+        /// Creates the default container when none other is specified.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract TContainer CreateDefaultContainer();
+
+        /// <summary>
+        /// Creates a Nancy-specific <see cref="CompositionContainer"/> containing the <see
+        /// cref="NancyExportProvider"/>. This container serves merely as a holder for the <see
+        /// cref="NancyExportProvider"/> and should itself home no exports.
+        /// </summary>
+        /// <returns></returns>
+        protected sealed override TInternalContainer GetApplicationContainer()
+        {
+            return GetInternalContainer(container);
+        }
+
+        /// <summary>
+        /// Gets the internal container instance.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        protected abstract TInternalContainer GetInternalContainer(TContainer container);
+
+        /// <summary>
         /// Provides a place to configure the newly created <see cref="CompositionContainer"/>.
         /// </summary>
         /// <param name="container"></param>
-        protected override void ConfigureApplicationContainer(TContainer container)
+        protected sealed override void ConfigureApplicationContainer(TInternalContainer container)
+        {
+            ConfigureInternalContainer(container);
+        }
+
+        /// <summary>
+        /// Provides a place to configure the newly created internal container.
+        /// </summary>
+        /// <param name="container"></param>
+        protected virtual void ConfigureInternalContainer(TInternalContainer container)
         {
 
         }
@@ -163,7 +253,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <param name="contractType"></param>
         /// <param name="implementationType"></param>
         /// <returns></returns>
-        bool IsTypeRegistered(CompositionContainer container, Type contractType, Type implementationType)
+        bool IsTypeRegistered(TInternalContainer container, Type contractType, Type implementationType)
         {
             return container.GetExports(
                 new ContractBasedImportDefinition(
@@ -189,7 +279,7 @@ namespace Nancy.Bootstrappers.Mef
         /// cref="INancyModuleCatalog"/> manually.
         /// </summary>
         /// <param name="applicationContainer">Application container to register into</param>
-        protected override sealed void RegisterBootstrapperTypes(TContainer applicationContainer)
+        protected override sealed void RegisterBootstrapperTypes(TInternalContainer applicationContainer)
         {
             applicationContainer.ComposeParts(this);
         }
@@ -203,7 +293,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container"></param>
         /// <param name="catalog"></param>
-        protected virtual void AddCatalog(TContainer container, ComposablePartCatalog catalog)
+        protected virtual void AddCatalog(TInternalContainer container, ComposablePartCatalog catalog)
         {
             Contract.Requires<ArgumentNullException>(container != null);
             Contract.Requires<ArgumentNullException>(catalog != null);
@@ -224,7 +314,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="typeRegistrations">Type registrations to register</param>
-        protected override void RegisterTypes(TContainer container, IEnumerable<TypeRegistration> typeRegistrations)
+        protected override void RegisterTypes(TInternalContainer container, IEnumerable<TypeRegistration> typeRegistrations)
         {
             Contract.Assert(container != null);
             Contract.Assert(typeRegistrations != null);
@@ -246,7 +336,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
-        protected override sealed void RegisterCollectionTypes(TContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
+        protected override sealed void RegisterCollectionTypes(TInternalContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
         {
             Contract.Assert(container != null);
             Contract.Assert(collectionTypeRegistrations != null);
@@ -262,7 +352,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="instanceRegistrations">Instance registration types</param>
-        protected override void RegisterInstances(TContainer container, IEnumerable<InstanceRegistration> instanceRegistrations)
+        protected override void RegisterInstances(TInternalContainer container, IEnumerable<InstanceRegistration> instanceRegistrations)
         {
             Contract.Assert(container != null);
             Contract.Assert(instanceRegistrations != null);
@@ -285,7 +375,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container"></param>
         /// <param name="moduleRegistrationTypes"></param>
-        protected override void RegisterRequestContainerModules(TContainer container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
+        protected override void RegisterRequestContainerModules(TInternalContainer container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
         {
             Contract.Assert(container != null);
             Contract.Assert(moduleRegistrationTypes != null);
@@ -338,7 +428,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <summary>
         /// Retrieve all module instances from the container.
         /// </summary>
-        protected override sealed IEnumerable<INancyModule> GetAllModules(TContainer container)
+        protected override sealed IEnumerable<INancyModule> GetAllModules(TInternalContainer container)
         {
             Contract.Assert(container != null);
 
@@ -350,7 +440,7 @@ namespace Nancy.Bootstrappers.Mef
         /// </summary>
         /// <param name="container">Container to use</param>
         /// <param name="moduleType">Type of the module</param>
-        protected override INancyModule GetModule(TContainer container, Type moduleType)
+        protected override INancyModule GetModule(TInternalContainer container, Type moduleType)
         {
             Contract.Assert(container != null);
             Contract.Assert(moduleType != null);
@@ -360,9 +450,23 @@ namespace Nancy.Bootstrappers.Mef
                 .FirstOrDefault(i => i.GetType() == moduleType);
         }
 
-        public virtual void Dispose()
+        public new void Dispose()
         {
+            base.Dispose();
 
+            // dispose of user provided, or default container
+            if (container != null)
+            {
+                if (containerOwner) container.Dispose();
+                container = null;
+            }
+
+            // dispose of Nancy specific container
+            if (internalContainer != null)
+            {
+                internalContainer.Dispose();
+                internalContainer = null;
+            }
         }
 
     }
