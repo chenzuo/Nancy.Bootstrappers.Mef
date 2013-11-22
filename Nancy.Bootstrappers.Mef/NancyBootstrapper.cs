@@ -217,7 +217,7 @@ namespace Nancy.Bootstrappers.Mef
         /// <returns></returns>
         protected sealed override TInternalContainer GetApplicationContainer()
         {
-            return GetInternalContainer(container);
+            return internalContainer = GetInternalContainer(container);
         }
 
         /// <summary>
