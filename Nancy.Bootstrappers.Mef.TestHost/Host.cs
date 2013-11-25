@@ -12,15 +12,16 @@ namespace Nancy.Bootstrappers.Mef.TestHost
 
 
         readonly Uri baseUri = new Uri("http://localhost:12333/nancy/");
-        readonly AggregateCatalog catalog;
         readonly CompositionContainer container;
         NancyHost nancy;
 
         public Host()
         {
             container = new CompositionContainer(
-                catalog = new AggregateCatalog(new AssemblyCatalog(typeof(Host).Assembly)),
-                CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe | CompositionOptions.ExportCompositionService);
+                new ApplicationCatalog(),
+                CompositionOptions.DisableSilentRejection |
+                CompositionOptions.IsThreadSafe |
+                CompositionOptions.ExportCompositionService);
 
             // export initial values
             container.ComposeExportedValue(this);
